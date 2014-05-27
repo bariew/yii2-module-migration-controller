@@ -31,11 +31,12 @@ Usage
     ...
     'controllerMap' => [
         'migrate'   => 'bariew\moduleMigration\ModuleMigration'
-    ]
+    ],
+    ...
 
     also define 'modules' app attribute here like in web app config file.
     ...
     'modules'   => [
         'user'  => 'app\modules\user\Module'
-    ]
+    ],
 ```

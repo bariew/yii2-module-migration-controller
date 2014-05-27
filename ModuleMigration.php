@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace bariew\cmsBootstrap;
+namespace bariew\moduleMigration;
 
 use yii\console\controllers\MigrateController;
 
@@ -78,8 +78,10 @@ class ModuleMigration extends MigrateController
                         $basePath = $config['basePath'];
                         break;
                     }
+                    $config = $config['class'];
                 default         : 
                     $basePath = \Yii::$app->basePath . "{$s}modules{$s}{$name}";
+                   // $basePath = \Yii::getAlias(preg_replace('/^(.*)\\\(\w+)$/', '$1', $config));
             }
             $this->allMigrationPaths[$name] = $basePath . $s . 'migrations';
         }
