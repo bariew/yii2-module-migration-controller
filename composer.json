@@ -1,0 +1,21 @@
+{
+    "name"          : "bariew/yii2-module-migration-controller",
+    "description"   : "Runs module migrations from module 'migrations' folder",
+    "type"          : "yii2-extension",
+    "version"       : "0.1.0",
+    "keywords"      : ["yii2","module","migration"],
+    "license"       : "BSD-3-Clause",
+    "homepage"      : "https://github.com/bariew/yii2-module-migration-controller",
+    "time"          : "2014-05-27",
+    "authors"       : [
+        {
+            "name": "Bariev Pavel",
+            "email": "bariew@yandex.ru"
+        }
+    ],
+    "autoload"      : {
+        "psr-4": {
+            "bariew\\moduleMigration\\": ""
+        }
+    } 
+}
