@@ -34,9 +34,13 @@ Usage
     ],
     ...
 
-    also define 'modules' app attribute here like in web app config file.
+    Also define 'modules' app attribute here like in web app config file, e.g.:
     ...
     'modules'   => [
-        'user'  => 'app\modules\user\Module'
+        'user'  => 'app\modules\user\Module',
+        'page'  => [
+            'class' => 'app\modules\base\modules\Module'
+        ]
     ],
+    migrations from your moduleFolder/migrations will be applied.
 ```

@@ -80,8 +80,9 @@ class ModuleMigration extends MigrateController
                     }
                     $config = $config['class'];
                 default         : 
-                    $basePath = \Yii::$app->basePath . "{$s}modules{$s}{$name}";
-                   // $basePath = \Yii::getAlias(preg_replace('/^(.*)\\\(\w+)$/', '$1', $config));
+                   // $basePath = \Yii::$app->basePath . "{$s}modules{$s}{$name}";
+                    $basePath = str_replace('\\', '/', preg_replace('/^(.*)\\\(\w+)$/', '@$1', $config));
+                    $basePath = \Yii::getAlias($basePath);
             }
             $this->allMigrationPaths[$name] = $basePath . $s . 'migrations';
         }
