@@ -16,10 +16,17 @@ use yii\console\controllers\MigrateController;
  */
 class ModuleMigration extends MigrateController
 {
-    
+    /**
+     * @var array module base paths
+     */
     public $allMigrationPaths = [];
+    /**
+     * @var array paths to migrations like [path => migrationName]
+     */
     public $migrationFiles = [];
-    
+    /**
+     * @inheritdoc
+     */
     public function beforeAction($action)
     {
         if (!parent::beforeAction($action)) {
@@ -32,8 +39,7 @@ class ModuleMigration extends MigrateController
     }
     
     /**
-     * Returns the migrations that are not applied.
-     * @return array list of new migrations
+     * @inheritdoc
      */
     protected function getNewMigrations()
     {
@@ -45,7 +51,12 @@ class ModuleMigration extends MigrateController
         $this->migrationPath = $this->allMigrationPaths['app'];
         return $result;
     }
-    
+    /**
+     * gets path to migration file
+     * @param string $name migration name
+     * @param string $path module migrations base path
+     * @return string path to migration file
+     */
     protected function getMigrationFile($name, $path = false)
     {
         $path = $path ? $path : $this->migrationPath;
@@ -64,7 +75,9 @@ class ModuleMigration extends MigrateController
 
         return new $class(['db' => $this->db]);
     }
-    
+    /**
+     * creates $allMigrationPaths attribute from module base paths
+     */
     protected function attachModuleMigrations()
     {
         $s = DIRECTORY_SEPARATOR;
@@ -89,8 +102,8 @@ class ModuleMigration extends MigrateController
     }
     
     /**
-     * Returns the migrations that are not applied.
-     * @return array list of new migrations
+     * Creates $migrationFiles array
+     * @return array list of migrations like [path=>migrationName]
      */
     protected function setMigrationFiles()
     {
