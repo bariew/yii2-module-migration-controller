@@ -45,6 +45,7 @@ class ModuleMigration extends MigrateController
     {
         $result = [];
         foreach ($this->allMigrationPaths as $path) {
+            
             $this->migrationPath = $path;
             $result = array_merge($result, parent::getNewMigrations());
         }
@@ -97,7 +98,10 @@ class ModuleMigration extends MigrateController
                     $basePath = str_replace('\\', '/', preg_replace('/^(.*)\\\(\w+)$/', '@$1', $config));
                     $basePath = \Yii::getAlias($basePath);
             }
-            $this->allMigrationPaths[$name] = $basePath . $s . 'migrations';
+            $path = $basePath . $s . 'migrations';
+            if (file_exists($path) && !is_file($path)) {
+                $this->allMigrationPaths[$name] = $path;
+            }
         }
     }
     
