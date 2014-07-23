@@ -32,6 +32,10 @@ class ModuleMigration extends MigrateController
         if (!parent::beforeAction($action)) {
             return false;
         }
+        if ($cache = \Yii::$app->db->schemaCache && is_object($cache)) {
+            $cache->flush();
+        }
+
         $this->allMigrationPaths['app'] = $this->migrationPath;
         $this->attachModuleMigrations();
         $this->setMigrationFiles();
@@ -45,17 +49,17 @@ class ModuleMigration extends MigrateController
     {
         $result = [];
         foreach ($this->allMigrationPaths as $path) {
-            
             $this->migrationPath = $path;
             $result = array_merge($result, parent::getNewMigrations());
         }
         $this->migrationPath = $this->allMigrationPaths['app'];
         return $result;
     }
+
     /**
      * gets path to migration file
      * @param string $name migration name
-     * @param string $path module migrations base path
+     * @param bool|string $path module migrations base path
      * @return string path to migration file
      */
     protected function getMigrationFile($name, $path = false)
@@ -73,7 +77,6 @@ class ModuleMigration extends MigrateController
             return false;
         }
         require_once($file);
-
         return new $class(['db' => $this->db]);
     }
     /**
