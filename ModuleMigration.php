@@ -32,10 +32,6 @@ class ModuleMigration extends MigrateController
         if (!parent::beforeAction($action)) {
             return false;
         }
-        if ($cache = \Yii::$app->db->schemaCache && is_object($cache)) {
-            $cache->flush();
-        }
-
         $this->allMigrationPaths['app'] = $this->migrationPath;
         $this->attachModuleMigrations();
         $this->setMigrationFiles();
