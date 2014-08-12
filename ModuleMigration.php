@@ -117,7 +117,11 @@ class ModuleMigration extends MigrateController
      */
     protected function setMigrationFiles()
     {
+        $result = [];
         foreach ($this->allMigrationPaths as $path) {
+            if (!file_exists($path) || is_file($path)) {
+                continue;
+            }
             $handle = opendir($path);
             while (($file = readdir($handle)) !== false) {
                 if ($file === '.' || $file === '..') {
@@ -125,12 +129,12 @@ class ModuleMigration extends MigrateController
                 }
                 $filePath = $path . DIRECTORY_SEPARATOR . $file;
                 if (preg_match('/^(m(\d{6}_\d{6})_.*?)\.php$/', $file, $matches) && is_file($filePath)) {
-                    $this->migrationFiles[$filePath] = $matches[1];
+                    $result[$filePath] = $matches[1];
                 }
             }
             closedir($handle);
         }
-        return $this->migrationFiles;
+        return $this->migrationFiles = $result;
     }
 
     /**
@@ -161,9 +165,33 @@ class ModuleMigration extends MigrateController
      */
     protected function setModuleMigrationPaths($module)
     {
-        $this->allMigrationPaths = [
-            'app' => '',
-            $module => isset($this->allMigrationPaths[$module]) ? $this->allMigrationPaths[$module] : ''
+        $paths = [
+            'app' => \Yii::getAlias('@app/runtime/tmp'),
         ];
+        if (isset($this->allMigrationPaths[$module])) {
+            $paths[$module] = $this->allMigrationPaths[$module];
+        }
+        $this->allMigrationPaths = $paths;
+        $this->setMigrationFiles();
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    protected function getMigrationHistory($limit)
+    {
+        $history = parent::getMigrationHistory($limit);
+        foreach ($history as $name => $time) {
+            if (!$this->migrationExists($name)) {
+                unset($history[$name]);
+            }
+        }
+        return $history;
+    }
+
+    protected function migrationExists($name)
+    {
+        return in_array($name, $this->migrationFiles);
     }
 }
