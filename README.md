@@ -44,3 +44,9 @@ Usage
     ],
     migrations from your moduleFolder/migrations will be applied.
 ```
+
+Since 1.2.0 you may use new commands:
+```
+./yii migrate/module-up yourModuleName
+./yii migrate/module-down yourModuleName
+```
