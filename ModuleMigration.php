@@ -50,6 +50,9 @@ class ModuleMigration extends MigrateController
         $result = [];
         foreach ($this->allMigrationPaths as $path) {
             $this->migrationPath = $path;
+            if (!file_exists($path)) {
+                continue;
+            }
             $result = array_merge($result, parent::getNewMigrations());
         }
         $this->migrationPath = $this->allMigrationPaths['app'];
@@ -128,5 +131,39 @@ class ModuleMigration extends MigrateController
             closedir($handle);
         }
         return $this->migrationFiles;
+    }
+
+    /**
+     * Migrates current module up.
+     * @param string $module module name.
+     * @param string|integer $limit migrations limit.
+     */
+    public function actionModuleUp($module, $limit = 'all')
+    {
+        $this->setModuleMigrationPaths($module);
+        parent::actionUp($limit);
+    }
+
+    /**
+     * Migrates current module down.
+     * @param string $module module name.
+     * @param string|integer $limit migrations limit.
+     */
+    public function actionModuleDown($module, $limit = 'all')
+    {
+        $this->setModuleMigrationPaths($module);
+        parent::actionDown($limit);
+    }
+
+    /**
+     * Sets modules array - leaves only module migrations.
+     * @param string $module module name.
+     */
+    protected function setModuleMigrationPaths($module)
+    {
+        $this->allMigrationPaths = [
+            'app' => '',
+            $module => isset($this->allMigrationPaths[$module]) ? $this->allMigrationPaths[$module] : ''
+        ];
     }
 }
