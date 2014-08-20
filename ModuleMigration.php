@@ -8,6 +8,8 @@
 namespace bariew\moduleMigration;
 
 use yii\console\controllers\MigrateController;
+use Yii;
+use yii\console\Exception;
 
 /**
  * Runs migrations from module /migrations folder.
@@ -24,6 +26,8 @@ class ModuleMigration extends MigrateController
      * @var array paths to migrations like [path => migrationName]
      */
     public $migrationFiles = [];
+
+    public $dumpTemplateFile = '@bariew/moduleMigration/dumpTemplate.php';
     /**
      * @inheritdoc
      */
@@ -159,15 +163,29 @@ class ModuleMigration extends MigrateController
         parent::actionDown($limit);
     }
 
+    public function actionDataDump($table, $remove = 1)
+    {
+        $className = 'm' . gmdate('ymd_His') . '_' . $table . '_dump';
+        if (!$data = Yii::$app->db->createCommand("SELECT * FROM {{{$table}}}")->queryAll()) {
+            throw new Exception("No data found");
+        }
+        $columns = DbHelper::dataColumns($data);
+        $sql = DbHelper::insertUpdate($table, $columns, $data)->getSql();
+        $file = $this->migrationPath . DIRECTORY_SEPARATOR . $className . '.php';
+        $content = $this->renderFile(Yii::getAlias($this->dumpTemplateFile), compact(
+            'className', 'remove', 'sql', 'table'
+        ));
+        file_put_contents($file, $content);
+        echo "New migration created successfully.\n";
+    }
+
     /**
      * Sets modules array - leaves only module migrations.
      * @param string $module module name.
      */
     protected function setModuleMigrationPaths($module)
     {
-        $paths = [
-            'app' => \Yii::getAlias('@app/runtime/tmp'),
-        ];
+        $paths = ['app' => \Yii::getAlias('@app/runtime/tmp')];
         if (isset($this->allMigrationPaths[$module])) {
             $paths[$module] = $this->allMigrationPaths[$module];
         }
