@@ -1,9 +1,13 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: pt
- * Date: 8/20/14
- * Time: 11:20 AM
+ * DbHelper class file.
+ * @license http://www.opensource.org/licenses/bsd-license.php
+ */
+
+/**
+ * Helper for migration commands.
+ *
+ * @author Pavel Bariev <bariew@yandex.ru>
  */
 
 namespace bariew\moduleMigration;
@@ -12,10 +16,19 @@ use yii\db\Command;
 
 class DbHelper
 {
+    /**
+     * Disables foreign key check. Use it before table migration operations.
+     * @return int whether check is disabled.
+     */
     public static function foreignKeysOff()
     {
         return Yii::$app->db->createCommand("SET foreign_key_checks = 0")->execute();
     }
+
+    /**
+     * Enables foreign key check. Use it after table migration operations.
+     * @return int whether check is enabled.
+     */
     public static function foreignKeysOn()
     {
         return Yii::$app->db->createCommand("SET foreign_key_checks = 1")->execute();
@@ -47,6 +60,11 @@ class DbHelper
         return \Yii::$app->$db->createCommand($sql);
     }
 
+    /**
+     * Extracts column names from table data.
+     * @param array $data table data.
+     * @return array column names.
+     */
     public static function dataColumns($data)
     {
         $row = reset($data);

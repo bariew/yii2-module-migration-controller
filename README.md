@@ -45,6 +45,9 @@ Usage
     migrations from your moduleFolder/migrations will be applied.
 ```
 
+Since 1.3.0 there is also migrate/data-dump {tableName} action
+    - for generating any table data migration into @app/migrations folder.
+
 Since 1.2.0 you may use new commands:
 ```
 ./yii migrate/module-up yourModuleName

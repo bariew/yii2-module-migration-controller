@@ -27,7 +27,11 @@ class ModuleMigration extends MigrateController
      */
     public $migrationFiles = [];
 
+    /**
+     * @var string dump migration file template.
+     */
     public $dumpTemplateFile = '@bariew/moduleMigration/dumpTemplate.php';
+
     /**
      * @inheritdoc
      */
@@ -163,6 +167,12 @@ class ModuleMigration extends MigrateController
         parent::actionDown($limit);
     }
 
+    /**
+     * Creates table data migration.
+     * @param string $table db table name.
+     * @param int $remove whether to remove previous data or not (1|0)
+     * @throws \yii\console\Exception "No data found"
+     */
     public function actionDataDump($table, $remove = 1)
     {
         $className = 'm' . gmdate('ymd_His') . '_' . $table . '_dump';
@@ -208,6 +218,11 @@ class ModuleMigration extends MigrateController
         return $history;
     }
 
+    /**
+     * Checks whether migration file exists.
+     * @param string $name migration name.
+     * @return bool whether migration exists.
+     */
     protected function migrationExists($name)
     {
         return in_array($name, $this->migrationFiles);
