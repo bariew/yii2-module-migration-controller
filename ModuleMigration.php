@@ -7,13 +7,14 @@
 
 namespace bariew\moduleMigration;
 
+use yii\console\Application;
 use yii\console\controllers\MigrateController;
 use Yii;
 use yii\console\Exception;
 
 /**
  * Runs migrations from module /migrations folder.
- * 
+ *
  * @author Pavel Bariev <bariew@yandex.ru>
  */
 class ModuleMigration extends MigrateController
@@ -27,11 +28,7 @@ class ModuleMigration extends MigrateController
      */
     public $migrationFiles = [];
 
-    /**
-     * @var string dump migration file template.
-     */
     public $dumpTemplateFile = '@bariew/moduleMigration/dumpTemplate.php';
-
     /**
      * @inheritdoc
      */
@@ -49,7 +46,7 @@ class ModuleMigration extends MigrateController
         $this->setMigrationFiles();
         return true;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -78,7 +75,7 @@ class ModuleMigration extends MigrateController
         $path = $path ? $path : $this->migrationPath;
         return $path . DIRECTORY_SEPARATOR . $name . '.php';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -90,35 +87,21 @@ class ModuleMigration extends MigrateController
         require_once($file);
         return new $class(['db' => $this->db]);
     }
+
     /**
      * creates $allMigrationPaths attribute from module base paths
      */
     protected function attachModuleMigrations()
     {
-        $s = DIRECTORY_SEPARATOR;
         foreach (\Yii::$app->modules as $name => $config) {
-            switch (gettype($config)) {
-                case 'object'   : 
-                    $basePath = $config->basePath;
-                    break;
-                case 'array'    : 
-                    if (isset($config['basePath'])) {
-                        $basePath = $config['basePath'];
-                        break;
-                    }
-                    $config = $config['class'];
-                default         : 
-                   // $basePath = \Yii::$app->basePath . "{$s}modules{$s}{$name}";
-                    $basePath = str_replace('\\', '/', preg_replace('/^(.*)\\\(\w+)$/', '@$1', $config));
-                    $basePath = \Yii::getAlias($basePath);
-            }
-            $path = $basePath . $s . 'migrations';
+            $basePath = Yii::$app->getModule($name)->basePath;
+            $path = $basePath . DIRECTORY_SEPARATOR. 'migrations';
             if (file_exists($path) && !is_file($path)) {
                 $this->allMigrationPaths[$name] = $path;
             }
         }
     }
-    
+
     /**
      * Creates $migrationFiles array
      * @return array list of migrations like [path=>migrationName]
@@ -167,12 +150,6 @@ class ModuleMigration extends MigrateController
         parent::actionDown($limit);
     }
 
-    /**
-     * Creates table data migration.
-     * @param string $table db table name.
-     * @param int $remove whether to remove previous data or not (1|0)
-     * @throws \yii\console\Exception "No data found"
-     */
     public function actionDataDump($table, $remove = 1)
     {
         $className = 'm' . gmdate('ymd_His') . '_' . $table . '_dump';
@@ -183,8 +160,8 @@ class ModuleMigration extends MigrateController
         $sql = DbHelper::insertUpdate($table, $columns, $data)->getSql();
         $file = $this->migrationPath . DIRECTORY_SEPARATOR . $className . '.php';
         $content = $this->renderFile(Yii::getAlias($this->dumpTemplateFile), compact(
-            'className', 'remove', 'sql', 'table'
-        ));
+                'className', 'remove', 'sql', 'table'
+            ));
         file_put_contents($file, $content);
         echo "New migration created successfully.\n";
     }
@@ -218,13 +195,22 @@ class ModuleMigration extends MigrateController
         return $history;
     }
 
-    /**
-     * Checks whether migration file exists.
-     * @param string $name migration name.
-     * @return bool whether migration exists.
-     */
     protected function migrationExists($name)
     {
         return in_array($name, $this->migrationFiles);
+    }
+
+    public function stderr($string)
+    {
+        return Yii::$app instanceof Application
+            ? parent::stderr($string)
+            : true;
+    }
+
+    public function stdout($string)
+    {
+        return Yii::$app instanceof Application
+            ? parent::stdout($string)
+            : true;
     }
 }
