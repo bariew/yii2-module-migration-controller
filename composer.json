@@ -2,7 +2,7 @@
     "name"          : "bariew/yii2-module-migration-controller",
     "description"   : "Runs module migrations from module 'migrations' folder",
     "type"          : "yii2-extension",
-    "keywords"      : ["yii2","module","migration"],
+    "keywords"      : ["yii2", "migration"],
     "license"       : "BSD-3-Clause",
     "homepage"      : "https://github.com/bariew/yii2-module-migration-controller",
     "time"          : "2014-05-27",
