@@ -9,8 +9,8 @@ namespace bariew\moduleMigration;
 
 use yii\console\Application;
 use yii\console\controllers\MigrateController;
-use Yii;
 use yii\console\Exception;
+use Yii;
 
 /**
  * Runs migrations from module /migrations folder.
@@ -29,6 +29,8 @@ class ModuleMigration extends MigrateController
     public $migrationFiles = [];
 
     public $dumpTemplateFile = '@bariew/moduleMigration/dumpTemplate.php';
+
+
     /**
      * @inheritdoc
      */
@@ -37,7 +39,7 @@ class ModuleMigration extends MigrateController
         if (!parent::beforeAction($action)) {
             return false;
         }
-        $cache = \Yii::$app->db->schemaCache;
+        $cache = $this->db->schemaCache;
         if (is_object($cache)) {
             $cache->flush();
         }
@@ -93,7 +95,7 @@ class ModuleMigration extends MigrateController
      */
     protected function attachModuleMigrations()
     {
-        foreach (\Yii::$app->modules as $name => $config) {
+        foreach (Yii::$app->modules as $name => $config) {
             $basePath = Yii::$app->getModule($name)->basePath;
             $path = $basePath . DIRECTORY_SEPARATOR. 'migrations';
             if (file_exists($path) && !is_file($path)) {
@@ -153,7 +155,7 @@ class ModuleMigration extends MigrateController
     public function actionDataDump($table, $remove = 1)
     {
         $className = 'm' . gmdate('ymd_His') . '_' . $table . '_dump';
-        if (!$data = Yii::$app->db->createCommand("SELECT * FROM {{{$table}}}")->queryAll()) {
+        if (!$data = $this->db->createCommand("SELECT * FROM {{{$table}}}")->queryAll()) {
             throw new Exception("No data found");
         }
         $columns = DbHelper::dataColumns($data);
@@ -172,14 +174,13 @@ class ModuleMigration extends MigrateController
      */
     protected function setModuleMigrationPaths($module)
     {
-        $paths = ['app' => \Yii::getAlias('@app/runtime/tmp')];
+        $paths = ['app' => Yii::getAlias('@app/runtime/tmp')];
         if (isset($this->allMigrationPaths[$module])) {
             $paths[$module] = $this->allMigrationPaths[$module];
         }
         $this->allMigrationPaths = $paths;
         $this->setMigrationFiles();
     }
-
 
     /**
      * @inheritdoc
@@ -195,6 +196,11 @@ class ModuleMigration extends MigrateController
         return $history;
     }
 
+    /**
+     * Checks if a migration exists
+     * @param string $name the name of the migration to check for.
+     * @return bool
+     */
     protected function migrationExists($name)
     {
         return in_array($name, $this->migrationFiles);
