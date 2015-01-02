@@ -6,4 +6,4 @@
 namespace bariew\moduleMigration;
 
 
-class ModuleMigration extends ModuleMigrationController{}
+class ModuleMigration extends ModuleMigrateController{}

@@ -17,7 +17,7 @@ use Yii;
  *
  * @author Pavel Bariev <bariew@yandex.ru>
  */
-class ModuleMigrationController extends MigrateController
+class ModuleMigrateController extends MigrateController
 {
     /**
      * @var array module base paths
