@@ -63,6 +63,7 @@ class ModuleMigration extends MigrateController
             $result = array_merge($result, parent::getNewMigrations());
         }
         $this->migrationPath = $this->allMigrationPaths['app'];
+        sort($result);
         return $result;
     }
 
