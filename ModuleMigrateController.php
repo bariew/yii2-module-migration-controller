@@ -39,9 +39,8 @@ class ModuleMigrateController extends MigrateController
         if (!parent::beforeAction($action)) {
             return false;
         }
-        $cache = $this->db->schemaCache;
-        if (is_object($cache)) {
-            $cache->flush();
+        if ($action->id !== 'create' && is_object($this->db->schemaCache)) {
+            $this->db->schemaCache->flush();
         }
         $this->allMigrationPaths['app'] = $this->migrationPath;
         $this->attachModuleMigrations();
