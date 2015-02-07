@@ -30,7 +30,7 @@ Usage
     Redefine migrate controller in your console config file:
     ...
     'controllerMap' => [
-        'migrate'   => 'bariew\moduleMigration\ModuleMigration'
+        'migrate'   => 'bariew\moduleMigration\ModuleMigrateController'
     ],
     ...
 

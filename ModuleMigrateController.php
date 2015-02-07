@@ -1,6 +1,6 @@
 <?php
 /**
- * ModuleMigration class file
+ * ModuleMigrateController class file
  * @copyright Copyright (c) 2014 Galament
  * @license http://www.yiiframework.com/license/
  */
