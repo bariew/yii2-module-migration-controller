@@ -152,6 +152,12 @@ class ModuleMigrateController extends MigrateController
         parent::actionDown($limit);
     }
 
+    /**
+     * Generate any table data migration into @app/migrations folder
+     * @param string $table name of table to dump
+     * @param int $remove truncate table before migrate/up
+     * @throws Exception if no data found
+     */
     public function actionDataDump($table, $remove = 1)
     {
         $className = 'm' . gmdate('ymd_His') . '_' . $table . '_dump';
@@ -166,6 +172,36 @@ class ModuleMigrateController extends MigrateController
             ));
         file_put_contents($file, $content);
         echo "New migration created successfully.\n";
+    }
+
+    /**
+     * Creates a new migration.
+     *
+     * This command creates a new migration using the available migration template.
+     * After using this command, developers should modify the created migration
+     * skeleton by filling up the actual migration logic.
+     *
+     * ~~~
+     * yii migrate/create create_user_table
+     * yii migrate/create create_user_table module_name
+     * ~~~
+     *
+     * @param string $name the name of the new migration. This should only contain
+     * letters, digits and/or underscores.
+     * @param string $module name of module for the new migration. Module must exist
+     * and contain 'migrations' path
+     * @throws Exception if the name argument is invalid.
+     */
+
+    public function actionCreate($name, $module = null)
+    {
+        if (!empty($module)) {
+            if (empty($this->allMigrationPaths[$module])) {
+                throw new Exception("Module $module does not exist or does not contains 'migrations' directory");
+            }
+            $this->migrationPath = $this->allMigrationPaths[$module];
+        }
+        parent::actionCreate($name);
     }
 
     /**
