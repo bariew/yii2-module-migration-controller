@@ -98,6 +98,9 @@ class ModuleMigrateController extends MigrateController
         foreach (Yii::$app->modules as $name => $config) {
             $basePath = Yii::$app->getModule($name)->basePath;
             $path = $basePath . DIRECTORY_SEPARATOR. 'migrations';
+            if ($this->allMigrationPaths['app'] == $path) {
+                continue;
+            }
             if (file_exists($path) && !is_file($path)) {
                 $this->allMigrationPaths[$name] = $path;
             }
