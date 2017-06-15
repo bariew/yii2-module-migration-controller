@@ -47,7 +47,7 @@ class ModuleMigrateController extends MigrateController
 
         $this->sourceMigrationPath = $this->migrationPath;
         if (is_array($this->migrationPath)) {
-            $this->allMigrationPaths = array_merge($this->allMigrationPaths, $this->migrationPath);
+            $this->allMigrationPaths = array_merge($this->migrationPath, $this->allMigrationPaths);
         } else {
             $this->allMigrationPaths[0] = $this->migrationPath;
         }
