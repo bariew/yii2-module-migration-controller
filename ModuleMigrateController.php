@@ -30,6 +30,8 @@ class ModuleMigrateController extends MigrateController
 
     public $dumpTemplateFile = '@bariew/moduleMigration/dumpTemplate.php';
 
+    protected $sourceMigrationPath = null;
+
 
     /**
      * @inheritdoc
@@ -42,7 +44,14 @@ class ModuleMigrateController extends MigrateController
         if ($action->id !== 'create' && is_object($this->db->schemaCache)) {
             $this->db->schemaCache->flush();
         }
-        $this->allMigrationPaths['app'] = $this->migrationPath;
+
+        $this->sourceMigrationPath = $this->migrationPath;
+        if (is_array($this->migrationPath)) {
+            $this->allMigrationPaths = array_merge($this->allMigrationPaths, $this->migrationPath);
+        } else {
+            $this->allMigrationPaths[] = $this->migrationPath;
+        }
+
         $this->attachModuleMigrations();
         $this->setMigrationFiles();
         return true;
@@ -61,7 +70,7 @@ class ModuleMigrateController extends MigrateController
             }
             $result = array_merge($result, parent::getNewMigrations());
         }
-        $this->migrationPath = $this->allMigrationPaths['app'];
+        $this->migrationPath = $this->sourceMigrationPath;
         sort($result);
         return $result;
     }
@@ -213,7 +222,7 @@ class ModuleMigrateController extends MigrateController
      */
     protected function setModuleMigrationPaths($module)
     {
-        $paths = ['app' => Yii::getAlias('@app/runtime/tmp')];
+        $paths = [Yii::getAlias('@app/runtime/tmp')];
         if (isset($this->allMigrationPaths[$module])) {
             $paths[$module] = $this->allMigrationPaths[$module];
         }
