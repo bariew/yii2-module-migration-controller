@@ -49,7 +49,7 @@ class ModuleMigrateController extends MigrateController
         if (is_array($this->migrationPath)) {
             $this->allMigrationPaths = array_merge($this->allMigrationPaths, $this->migrationPath);
         } else {
-            $this->allMigrationPaths[] = $this->migrationPath;
+            $this->allMigrationPaths[0] = $this->migrationPath;
         }
 
         $this->attachModuleMigrations();
@@ -107,7 +107,7 @@ class ModuleMigrateController extends MigrateController
         foreach (Yii::$app->modules as $name => $config) {
             $basePath = Yii::$app->getModule($name)->basePath;
             $path = $basePath . DIRECTORY_SEPARATOR. 'migrations';
-            if ($this->allMigrationPaths['app'] == $path) {
+            if (isset($this->migrationPath[0]) && $this->migrationPath[0] == $path) {
                 continue;
             }
             if (file_exists($path) && !is_file($path)) {
