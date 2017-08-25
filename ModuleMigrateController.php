@@ -63,12 +63,18 @@ class ModuleMigrateController extends MigrateController
     protected function getNewMigrations()
     {
         $result = [];
-        foreach ($this->allMigrationPaths as $path) {
-            $this->migrationPath = $path;
-            if (!file_exists($path)) {
-                continue;
+        foreach ($this->allMigrationPaths as $paths) {
+            if (!is_array($paths)) {
+                $paths = [$paths];
             }
-            $result = array_merge($result, parent::getNewMigrations());
+
+            foreach ($paths as $path) {
+                $this->migrationPath = $path;
+                if (!file_exists($path)) {
+                    continue;
+                }
+                $result = array_merge($result, parent::getNewMigrations());
+            }
         }
         $this->migrationPath = $this->sourceMigrationPath;
         sort($result);
@@ -123,21 +129,27 @@ class ModuleMigrateController extends MigrateController
     protected function setMigrationFiles()
     {
         $result = [];
-        foreach ($this->allMigrationPaths as $path) {
-            if (!file_exists($path) || is_file($path)) {
-                continue;
+        foreach ($this->allMigrationPaths as $paths) {
+            if (!is_array($paths)) {
+                $paths = [$paths];
             }
-            $handle = opendir($path);
-            while (($file = readdir($handle)) !== false) {
-                if ($file === '.' || $file === '..') {
+
+            foreach ($paths as $path) {
+                if (!file_exists($path) || is_file($path)) {
                     continue;
                 }
-                $filePath = $path . DIRECTORY_SEPARATOR . $file;
-                if (preg_match('/^(m(\d{6}_\d{6})_.*?)\.php$/', $file, $matches) && is_file($filePath)) {
-                    $result[$filePath] = $matches[1];
+                $handle = opendir($path);
+                while (($file = readdir($handle)) !== false) {
+                    if ($file === '.' || $file === '..') {
+                        continue;
+                    }
+                    $filePath = $path . DIRECTORY_SEPARATOR . $file;
+                    if (preg_match('/^(m(\d{6}_\d{6})_.*?)\.php$/', $file, $matches) && is_file($filePath)) {
+                        $result[$filePath] = $matches[1];
+                    }
                 }
+                closedir($handle);
             }
-            closedir($handle);
         }
         return $this->migrationFiles = $result;
     }
